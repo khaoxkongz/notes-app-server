@@ -31,6 +31,29 @@ app.post("/api/notes", async (req, res) => {
 	}
 });
 
+app.put("/api/notes/:id", async (req, res) => {
+	const { title, content } = req.body;
+	const id = parseInt(req.params.id);
+
+	if (!title || !content) {
+		return res.status(400).send("title and content fields required");
+	}
+
+	if (!id || isNaN(id)) {
+		return res.status(400).send("ID must be a valid number");
+	}
+
+	try {
+		const updatedNote = await prisma.note.update({
+			where: { id },
+			data: { title, content },
+		});
+		return res.json(updatedNote);
+	} catch (error) {
+		return res.status(500).send("Oops, some thing went wrong");
+	}
+});
+
 app.listen(8888, () => {
 	console.log("server running on localhost:8888");
 });
